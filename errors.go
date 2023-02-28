@@ -3,5 +3,7 @@ package mapper
 import "errors"
 
 var (
-	ErrMappingFunctionWasNotRegistered = errors.New("mapping function was not registered")
+	ErrGenericParameterFromMustBeAStruct = errors.New("generic parameter From must be a struct")
+	ErrGenericParameterToMustBeAStruct   = errors.New("generic parameter To must be a struct")
+	ErrMappingFunctionWasNotRegistered   = errors.New("mapping function was not registered")
 )

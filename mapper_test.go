@@ -24,7 +24,7 @@ var _ = Describe("Mapper", func() {
 				Name: "Vulpes Ferrilata",
 			}
 
-			staff, err := mapper.Map[*User, *Staff](user)
+			staff, err := mapper.Map[User, Staff](user)
 
 			Expect(staff).Should(BeNil())
 			Expect(err).Should(MatchError(mapper.ErrMappingFunctionWasNotRegistered))
@@ -49,7 +49,7 @@ var _ = Describe("Mapper", func() {
 				Name: "Vulpes Ferrilata",
 			}
 
-			staff, err := mapper.Map[*User, *Staff](user)
+			staff, err := mapper.Map[User, Staff](user)
 
 			Expect(staff.Name).Should(BeEquivalentTo(user.Name))
 			Expect(err).ShouldNot(HaveOccurred())
@@ -72,7 +72,7 @@ var _ = Describe("Mapper", func() {
 		})
 
 		It("can map and return error", func() {
-			staff, err := mapper.Map[*User, *Staff](nil)
+			staff, err := mapper.Map[User, Staff](nil)
 
 			Expect(staff).Should(BeNil())
 			Expect(err).Should(MatchError(userNotFoundErr))
