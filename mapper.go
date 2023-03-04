@@ -5,8 +5,8 @@ import (
 )
 
 type key struct {
-	From interface{}
-	To   interface{}
+	From string
+	To   string
 }
 
 type MappingFunc[From any, To any] func(from From) (To, error)
@@ -30,6 +30,10 @@ func parseMappingFunc[From any, To any](f MappingFunc[any, any]) MappingFunc[Fro
 	}
 }
 
+func getFullPath(t reflect.Type) string {
+	return t.PkgPath() + "." + t.Name()
+}
+
 func CreateMap[From any, To any](f MappingFunc[*From, *To]) error {
 	var emptyFrom From
 	var emptyTo To
@@ -42,7 +46,12 @@ func CreateMap[From any, To any](f MappingFunc[*From, *To]) error {
 		return ErrGenericParameterToMustBeAStruct
 	}
 
-	mapper[key{emptyFrom, emptyTo}] = wrapMappingFunc(f)
+	k := key{
+		From: getFullPath(reflect.TypeOf(emptyFrom)),
+		To:   getFullPath(reflect.TypeOf(emptyTo)),
+	}
+
+	mapper[k] = wrapMappingFunc(f)
 
 	return nil
 }
@@ -59,7 +68,12 @@ func Map[From any, To any](from *From) (*To, error) {
 		return nil, ErrGenericParameterToMustBeAStruct
 	}
 
-	f, ok := mapper[key{emptyFrom, emptyTo}]
+	k := key{
+		From: getFullPath(reflect.TypeOf(emptyFrom)),
+		To:   getFullPath(reflect.TypeOf(emptyTo)),
+	}
+
+	f, ok := mapper[k]
 	if !ok {
 		return nil, ErrMappingFunctionWasNotRegistered
 	}
