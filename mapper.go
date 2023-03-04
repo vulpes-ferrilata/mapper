@@ -30,7 +30,7 @@ func parseMappingFunc[From any, To any](f mappingFunc[any, any]) mappingFunc[Fro
 	}
 }
 
-func CreateMap[From comparable, To comparable](f mappingFunc[*From, *To]) error {
+func CreateMap[From any, To any](f mappingFunc[*From, *To]) error {
 	var emptyFrom From
 	var emptyTo To
 
@@ -47,7 +47,7 @@ func CreateMap[From comparable, To comparable](f mappingFunc[*From, *To]) error 
 	return nil
 }
 
-func Map[From comparable, To comparable](from *From) (*To, error) {
+func Map[From any, To any](from *From) (*To, error) {
 	var emptyFrom From
 	var emptyTo To
 
