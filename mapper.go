@@ -9,28 +9,28 @@ type key struct {
 	To   interface{}
 }
 
-var mapper map[key]mappingFunc[any, any]
+type MappingFunc[From any, To any] func(from From) (To, error)
 
-type mappingFunc[From any, To any] func(from From) (To, error)
+var mapper map[key]MappingFunc[any, any]
 
 func init() {
-	mapper = make(map[key]mappingFunc[any, any])
+	mapper = make(map[key]MappingFunc[any, any])
 }
 
-func wrapMappingFunc[From any, To any](f mappingFunc[From, To]) mappingFunc[any, any] {
+func wrapMappingFunc[From any, To any](f MappingFunc[From, To]) MappingFunc[any, any] {
 	return func(from any) (any, error) {
 		return f(from.(From))
 	}
 }
 
-func parseMappingFunc[From any, To any](f mappingFunc[any, any]) mappingFunc[From, To] {
+func parseMappingFunc[From any, To any](f MappingFunc[any, any]) MappingFunc[From, To] {
 	return func(from From) (To, error) {
 		to, err := f(from)
 		return to.(To), err
 	}
 }
 
-func CreateMap[From any, To any](f mappingFunc[*From, *To]) error {
+func CreateMap[From any, To any](f MappingFunc[*From, *To]) error {
 	var emptyFrom From
 	var emptyTo To
 
