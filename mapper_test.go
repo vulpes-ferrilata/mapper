@@ -18,13 +18,19 @@ var _ = Describe("Mapper", func() {
 		Name string
 	}
 
+	var m *mapper.Mapper
+
+	BeforeEach(func() {
+		m = &mapper.Mapper{}
+	})
+
 	When("mapping function was not registered", func() {
 		It("cannot map", func() {
 			user := &User{
 				Name: "Vulpes Ferrilata",
 			}
 
-			staff, err := mapper.Map[User, Staff](user)
+			staff, err := mapper.Map[User, Staff](m)(user)
 
 			Expect(staff).Should(BeNil())
 			Expect(err).Should(MatchError(mapper.ErrMappingFunctionWasNotRegistered))
@@ -33,7 +39,7 @@ var _ = Describe("Mapper", func() {
 
 	When("mapping function was registered", func() {
 		BeforeEach(func() {
-			mapper.CreateMap(func(user *User) (*Staff, error) {
+			mapper.Register[User, Staff](m)(func(user *User) (*Staff, error) {
 				if user == nil {
 					return nil, nil
 				}
@@ -49,7 +55,7 @@ var _ = Describe("Mapper", func() {
 				Name: "Vulpes Ferrilata",
 			}
 
-			staff, err := mapper.Map[User, Staff](user)
+			staff, err := mapper.Map[User, Staff](m)(user)
 
 			Expect(staff.Name).Should(BeEquivalentTo(user.Name))
 			Expect(err).ShouldNot(HaveOccurred())
@@ -60,7 +66,7 @@ var _ = Describe("Mapper", func() {
 		userNotFoundErr := errors.New("user not found")
 
 		BeforeEach(func() {
-			mapper.CreateMap(func(user *User) (*Staff, error) {
+			mapper.Register[User, Staff](m)(func(user *User) (*Staff, error) {
 				if user == nil {
 					return nil, userNotFoundErr
 				}
@@ -72,7 +78,7 @@ var _ = Describe("Mapper", func() {
 		})
 
 		It("can map and return error", func() {
-			staff, err := mapper.Map[User, Staff](nil)
+			staff, err := mapper.Map[User, Staff](m)(nil)
 
 			Expect(staff).Should(BeNil())
 			Expect(err).Should(MatchError(userNotFoundErr))
